@@ -1,0 +1,15 @@
+INSERT INTO TABLE FINAL_OUTPUT
+SELECT IP_ADD,PAID_LINK_COUNT,'','','','','','SR_3'
+FROM
+(
+
+SELECT ip_add,COUNT(1) PAID_LINK_COUNT
+FROM
+(
+SELECT ip_add,hit_bucket,click_hrs,MIN(click_time) 
+FROM PARSE_2ND
+where REST_URL like '%gclid%'
+GROUP BY ip_add,hit_bucket,click_hrs
+) A
+GROUP BY ip_add HAVING COUNT(1)>2
+) A;

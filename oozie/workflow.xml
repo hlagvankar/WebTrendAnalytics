@@ -1,0 +1,106 @@
+<workflow-app name="WEBLOG_ANALYSIS" xmlns="uri:oozie:workflow:0.4">
+    <start to="stp1_load_weblog_into_hive_table_src_tab"/>
+    <action name="stp1_load_weblog_into_hive_table_src_tab">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/load_weblog_into_hive_table_src_tab_step_1.txt</script>
+        </hive>
+        <ok to="stp_2_1st_level_parsing"/>
+        <error to="kill"/>
+    </action>
+    <action name="stp_2_1st_level_parsing">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/stp_2_1st_level_parsing.txt</script>
+        </hive>
+        <ok to="stp_3_2nd_level_parsing"/>
+        <error to="kill"/>
+    </action>
+    <action name="stp_3_2nd_level_parsing">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/stp_3_2nd_level_parsing.txt</script>
+        </hive>
+        <ok to="Case_1_Cust_Visit_Patterns"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_1_Cust_Visit_Patterns">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_1_Cust_Visit_Patterns.txt</script>
+        </hive>
+        <ok to="Case_2_Visits_but_no_purchase"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_2_Visits_but_no_purchase">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_2_Visits_but_no_purchase.txt</script>
+        </hive>
+        <ok to="Case_3_IP_clicked_paid_ling_gt_2"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_3_IP_clicked_paid_ling_gt_2">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_3_IP_clicked_paid_ling_gt_2.txt</script>
+        </hive>
+        <ok to="Case_4_Returning_and_Non_return_IP"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_4_Returning_and_Non_return_IP">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_4_Returning_and_Non_return_IP.txt</script>
+        </hive>
+        <ok to="Case_5_Product_Trend_Analysis"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_5_Product_Trend_Analysis">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_5_Product_Trend_Analysis.txt</script>
+        </hive>
+        <ok to="Case_7_Peak_and_Off_peak_hrs_access"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_7_Peak_and_Off_peak_hrs_access">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_7_Peak_and_Off_peak_hrs_access.txt</script>
+        </hive>
+        <ok to="Case_8_Crawlers_Visit_Pattern"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_8_Crawlers_Visit_Pattern">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_8_Crawlers_Visit_Pattern.txt</script>
+        </hive>
+        <ok to="Case_9_IP_Add_to_be_Blacklisted"/>
+        <error to="kill"/>
+    </action>
+    <action name="Case_9_IP_Add_to_be_Blacklisted">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <script>/user/hue/oozie/workspaces/_hue_-oozie-5-1442767021.26/Case_9_IP_Add_to_be_Blacklisted.txt</script>
+        </hive>
+        <ok to="end"/>
+        <error to="kill"/>
+    </action>
+    <kill name="kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end"/>
+</workflow-app>

@@ -1,0 +1,19 @@
+DROP TABLE PARSE_2ND;
+
+CREATE TABLE PARSE_2ND AS
+select 
+TRIM(PARSE_1ST.IP_ADD) IP_ADD,
+from_unixtime(unix_timestamp(SUBSTRING(PARSE_1ST.CLICK_TIME,1,21),'dd/MMM/yyyy:hh:mm:ss')) CLICK_TIME,
+CEIL(regexp_replace((unix_timestamp(SUBSTRING(PARSE_1ST.CLICK_TIME,1,21),'dd/MMM/yyyy:hh:mm:ss')-B.MIN_TIME),0,1)/300) HIT_BUCKET,
+HOUR(from_unixtime(unix_timestamp(SUBSTRING(PARSE_1ST.CLICK_TIME,1,21),'dd/MMM/yyyy:hh:mm:ss'))) CLICK_HRS,
+DAY(from_unixtime(unix_timestamp(SUBSTRING(PARSE_1ST.CLICK_TIME,1,21),'dd/MMM/yyyy:hh:mm:ss'))) CLICK_DAY,
+PARSE_1ST.URL,
+PARSE_1ST.REST_URL
+FROM 
+PARSE_1ST JOIN
+(
+SELECT TRIM(IP_ADD) IP_ADD,
+MIN(unix_timestamp(SUBSTRING(CLICK_TIME,1,21),'dd/MMM/yyyy:hh:mm:ss')) MIN_TIME FROM PARSE_1ST
+GROUP BY TRIM(IP_ADD)
+) B
+ON(TRIM(PARSE_1ST.IP_ADD)=TRIM(B.IP_ADD));

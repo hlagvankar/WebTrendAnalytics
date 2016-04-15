@@ -1,0 +1,11 @@
+drop table PARSE_1ST;
+
+create table PARSE_1ST as
+select substring(WEB_TEXT,0,instr(WEB_TEXT,' - -')) IP_ADD,
+substring(WEB_TEXT,instr(WEB_TEXT,' - - [')+6,instr(WEB_TEXT,'] ')-instr(WEB_TEXT,' - - [')-6)CLICK_TIME,
+substring(
+substring(WEB_TEXT,instr(WEB_TEXT,'<web-url>.')),
+0,instr(substring(WEB_TEXT,instr(WEB_TEXT,'<web-url>.')),'"')-1
+) URL,
+substring(WEB_TEXT,instr(substring(WEB_TEXT,instr(WEB_TEXT,'<web-url>.')),'"')+1)REST_URL
+from SRC_TAB;

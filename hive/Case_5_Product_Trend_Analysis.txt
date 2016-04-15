@@ -1,0 +1,42 @@
+INSERT INTO TABLE FINAL_OUTPUT
+SELECT DATE,CLICK_HRS,PRODUCT_COUNT,PRODUCT,'','','','SR_5'
+FROM
+(
+
+SELECT TO_DATE(CLICK_TIME) DATE,HOUR(CLICK_TIME) CLICK_HRS,COUNT(1) PRODUCT_COUNT,PRODUCT
+FROM
+(
+SELECT ip_add,MIN(click_time) CLICK_TIME,hit_bucket,
+TRIM(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+) PRODUCT
+ FROM PARSE_2ND
+WHERE URL LIKE '%<web-url>%'
+AND REST_URL NOT LIKE '%Googlebot%'
+AND TRIM
+(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+) <>''
+GROUP BY ip_add,hit_bucket,
+TRIM(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+)
+) A
+
+GROUP BY TO_DATE(CLICK_TIME),HOUR(CLICK_TIME),PRODUCT
+) A;

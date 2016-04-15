@@ -1,0 +1,46 @@
+DROP TABLE PUR_INFO;
+
+CREATE TABLE PUR_INFO
+(
+PUR_IP STRING
+);
+
+LOAD DATA LOCAL INPATH '/home/hive/PROJ/PURCHASE' INTO TABLE PUR_INFO;
+
+
+INSERT INTO TABLE FINAL_OUTPUT
+SELECT IP_ADD,CLICK_TIME,PRODUCT,'','','','','SR_2'
+FROM
+(
+SELECT ip_add,hit_bucket,
+TRIM(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+) PRODUCT,
+MIN(click_time) CLICK_TIME FROM PARSE_2ND
+WHERE URL LIKE '%<web-url>%'
+AND REST_URL NOT LIKE '%Googlebot%'
+AND TRIM
+(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+) <>''
+GROUP BY ip_add,hit_bucket,
+TRIM(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+)
+) A LEFT OUTER JOIN PUR_INFO B ON (A.IP_ADD=B.PUR_IP)
+WHERE B.PUR_IP IS NULL;

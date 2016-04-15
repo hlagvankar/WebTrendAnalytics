@@ -1,0 +1,3 @@
+piggybank=/home/hlagvankar/pig-0.11.1/piggybank.jar
+hdfs_outpath=/project/weblog/weblog_clean
+hdfs_inpath=/project/weblog/dataset/

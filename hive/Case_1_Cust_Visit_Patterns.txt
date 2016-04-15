@@ -1,0 +1,50 @@
+DROP TABLE FINAL_OUTPUT;
+
+CREATE TABLE 
+FINAL_OUTPUT
+(
+COL1 STRING,
+COL2 STRING,
+COL3 STRING,
+COL4 STRING,
+COL5 STRING,
+COL6 STRING,
+COL7 STRING,
+COL8 STRING
+);
+
+INSERT INTO TABLE FINAL_OUTPUT
+SELECT IP_ADD,CLICK_TIME,PRODUCT,'','','','','SR_1'
+FROM
+(
+SELECT ip_add,hit_bucket,
+TRIM(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+) PRODUCT,
+MIN(click_time) CLICK_TIME FROM PARSE_2ND
+WHERE URL LIKE '%http://etlhive.com%'
+AND REST_URL NOT LIKE '%Googlebot%'
+AND TRIM
+(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+) <>''
+GROUP BY ip_add,hit_bucket,
+TRIM(
+substring
+(
+regexp_replace(URL,'<web-url>',''),
+0,
+(INSTR(regexp_replace(URL,'<web-url>',''),'/'))-1
+)
+)
+) A;
